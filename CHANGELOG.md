@@ -1,3 +1,19 @@
+# v0.0.2 (Mon May 12 2025)
+
+:tada: This release contains work from a new contributor! :tada:
+
+Thank you, null[@hazelcross](https://github.com/hazelcross), for all your work!
+
+#### ⚠️ Pushed to `main`
+
+- Added Deployment Files ([@hazelcross](https://github.com/hazelcross))
+
+#### Authors: 1
+
+- [@hazelcross](https://github.com/hazelcross)
+
+---
+
 # v0.0.1 (Mon May 12 2025)
 
 :tada: This release contains work from a new contributor! :tada:
