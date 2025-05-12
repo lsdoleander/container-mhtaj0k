@@ -6,7 +6,7 @@ services:
     build:
       context: ./src
     ports:
-      - "5000:5000"
+      - "443:9000"
     volumes:
       - type: bind
         source: ./src/web
@@ -36,15 +36,15 @@ services:
       MYSQL_PASSWORD: password
       MYSQL_DATABASE: app_database
 
-  phpmyadmin:
+  # phpmyadmin:
     # To view the database during local development
     # Visit http://127.0.0.1:8080/
     # Server is: db
     # Username is same as MYSQL_USER
     # Password is same as MYSQL_PASSWORD
-    image: phpmyadmin
-    restart: always
-    ports:
-      - 8080:80
-    environment:
-      PMA_ARBITRARY: "1"
+    # image: phpmyadmin
+    # restart: always
+    # ports:
+    #   - 8080:80
+    # environment:
+    #   PMA_ARBITRARY: "1"

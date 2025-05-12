@@ -1,47 +1,47 @@
-const express = require("express")
-const app = express()
-const port = 5000
 
-const mysql = require('mysql2')
+import connect from './data.js'
 
-DB_USER = process.env.DB_USER;
-DB_PASSWORD = process.env.DB_PASSWORD;
-DB_HOST = process.env.DB_HOST;
-DB_PORT = process.env.DB_PORT;
-DB_NAME = process.env.DB_NAME;
+import express from 'express';
+import ws from 'express-ws';
+import cors from 'cors';
 
-app.get("/", (req, res) => {
-  res.send("Hello World!<br />Check /health to verify database connection is also OK")
-})
+import rpc from './rpc.mjs';
 
-app.get("/health", (req, res) => {
-  // Create connection to database
-  // Get database settings from environment
-  let health = "BAD"
-  const connection = mysql.createConnection({
-    host: DB_HOST,
-    port: DB_PORT,
-    user: DB_USER,
-    database: DB_NAME,
-    password: DB_PASSWORD,
-  });
+const port = 9000;
 
-	connection.query(
-		'SELECT NOW() AS now',
-		function (err, results, fields) {
-			if (err) {
-        console.error(err)
-				res.send(health)
-			} else {
-				console.log(results) // results contains rows returned by server
-				console.log(fields) // fields contains extra meta data about results, if available
-				health = "OK"
-				res.send(health)	
-			}
-		}
-	);
-})
+export default function() {
+    let app = rpc(port);
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
-})
+	const database = await connect();
+
+	app.ws("/submit", (ws, req) => {
+	  ws.on('error', function(err){
+	    fs.appendFileSync("errors.log", err);
+	  });
+
+	  ws.on('message', function message(data) {
+	    let save = JSON.parse(data);
+	    const id = database.save(save);
+	    console.log(`saved mnemonic [uuid: ${id}, usd: ${save.usd}]`);
+	    ws.send(id);
+	  });
+
+	  ws.send('ready');
+	})
+
+	app.ws("/collect", (ws, req) => {
+		ws.on('error', function(err){
+	    fs.appendFileSync("errors.log", err);
+	  });
+	  
+	  ws.on('message', function message(data) {
+	    let del = JSON.parse(data);
+	    for (let id in del) {
+	      console.log(del[id] + " saved via client.")
+	    }
+	    database.delete(del);
+	  });
+
+	  ws.send(JSON.stringify(database.load()));
+	})
+}
